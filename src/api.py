@@ -5,8 +5,8 @@ def get_employers(search_text):
     url = 'https://api.hh.ru/employers'
     params = {
         'text': search_text,
-         'host': 'hh.kz',
-        #'area': 1,
+        'host': 'hh.kz',
+        'only_with_vacancies': True,
         'per_page': 100,
         'page': 0
     }
@@ -36,16 +36,12 @@ def get_employers(search_text):
     return result
 
 
-def get_vacancies(search_text, exclude_text):
+def get_vacancies(list_emp):
     url = 'https://api.hh.ru/vacancies'
     params = {
-        #'text': search_text,
-        #'exclude': exclude_text,
-        #'search_field': 'name',
         'area': 160,
         'period': 30,
-        #'only_with_salary': True,
-        'employer_id':'25880',
+        'employer_id':list_emp,
         'per_page': 100,
         'page': 0
     }
@@ -63,18 +59,20 @@ def get_vacancies(search_text, exclude_text):
 
     result = []
     for vacancy in vacancies:
-      if vacancy['salary'] is not None:
-        vacancy_data = {
-            'name': vacancy['name'],
-            'salary': vacancy['salary']['from'] if vacancy['salary']['from'] is not None else 'Not specified',
-            'url': vacancy['url']
-        }
-      else:
-        vacancy_data = {
-            'name': vacancy['name'],
-            'salary': 'Not specified',
-            'url': vacancy['url']
-        }
+        if vacancy['salary'] is not None:
+            vacancy_data = {
+                'name': vacancy['name'],
+                'salary': vacancy['salary']['from'],# if vacancy['salary']['from'] is not None else 'Not specified',
+                'url': vacancy['url'],
+                'id_emp': vacancy['employer']['id']
+            }
+        else:
+            vacancy_data = {
+                'name': vacancy['name'],
+                'salary': None,
+                'url': vacancy['url'],
+                'id_emp': vacancy['employer']['id']
+            }
         result.append(vacancy_data)
 
     return result
@@ -86,3 +84,13 @@ def get_vacancies(search_text, exclude_text):
 #
 # for vacancy in vacancies:
 #     print(vacancy)
+
+
+# search_text_list = ['Kaspi.kz', 'Freedom Holding', 'BI Group']
+# employers = []
+# for search_text in search_text_list:
+#     employers += get_employers(search_text)
+#     # employers_list.append(employers)
+#
+# for employer in employers:
+#   print(employer)
