@@ -3,20 +3,12 @@ import psycopg2
 
 
 def database_exists(database_name: str, params: dict) -> bool:
-    """Проверка существует ли база и есть ли в ней данные, если да, возвращаем TRUE"""
-    # result = False
+    """Проверка существует ли база данных и есть ли в ней данные, если да, возвращаем TRUE"""
     conn = psycopg2.connect(dbname='postgres', **params)
     cur = conn.cursor()
 
     cur.execute("""SELECT 1 FROM pg_database WHERE datname = %s""", (database_name,))
     result = cur.fetchone() is not None
-    # if cur.fetchone():
-    #     conn_hh = psycopg2.connect(dbname=database_name, **params)
-    #     cur_hh = conn_hh.cursor()
-    #     cur_hh.execute(f"SELECT * FROM vacancies LIMIT 1")
-    #     result = cur_hh.fetchone() is not None
-    #     cur_hh.close()
-    #     conn_hh.close()
 
     cur.close()
     conn.close()
@@ -64,14 +56,10 @@ def create_database(database_name: str, params: dict, database_is_exists = False
         conn = psycopg2.connect(dbname=database_name, **params)
 
         with conn.cursor() as cur:
-            cur.execute("""
-                       TRUNCATE TABLE vacancies RESTART IDENTITY CASCADE 
-                   """)
+            cur.execute("TRUNCATE TABLE vacancies RESTART IDENTITY CASCADE")
 
         with conn.cursor() as cur:
-            cur.execute("""
-                TRUNCATE TABLE employers RESTART IDENTITY CASCADE 
-            """)
+            cur.execute("TRUNCATE TABLE employers RESTART IDENTITY CASCADE")
 
     conn.commit()
     conn.close()
@@ -84,7 +72,6 @@ def save_employers_to_database(data: list[dict[str, Any]], database_name: str, p
 
     with conn.cursor() as cur:
         for employer in data:
-            # print(employer)
             cur.execute(
                 """
                 INSERT INTO employers (id_emp, company_name, open_vacancies, employer_url)

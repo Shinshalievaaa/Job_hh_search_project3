@@ -35,8 +35,6 @@ def database_update(database_is_exists = False):
 
     data_vacancies = get_vacancies(list_emp)
 
-    # create_database('hh', params)
-
     save_employers_to_database(data_employers, 'hh', params)
 
     save_vacancies_to_database(data_vacancies, 'hh', params)
@@ -60,41 +58,68 @@ def print_console(df, title):
     console.print(table)
 
 
+def display_interactive_menu(DBManager):
+
+    menu_data = {
+        1: {"title": "Список всех компаний и количество вакансий у каждой компании", "function": DBManager.get_companies_and_vacancies_count},
+        2: {"title": "Список всех вакансий", "function": DBManager.get_all_vacancies},
+        3: {"title": "Средняя зарплата по вакансиям", "function": DBManager.get_avg_salary},
+        4: {"title": "Список всех вакансий, у которых зарплата выше средней по всем вакансиям", "function": DBManager.get_vacancies_with_higher_salary},
+        5: {"title": "Список всех вакансий, в названии которых содержится текст", "function": DBManager.get_vacancies_with_keyword}
+    }
+    choice = 0
+
+    while True:
+        print("\n--- МЕНЮ ---")
+        for number, item in menu_data.items():
+            print(f"{number}. {item['title']}")
+
+        while True:
+            try:
+                choice = int(input("Введите номер пункта: "))
+                if 1 <= choice <= 5:
+                    break
+                else:
+                    print("Пожалуйста, введите число от 1 до 5.")
+            except ValueError:
+                print("Некорректный ввод. Пожалуйста, введите целое число.")
+
+        if choice == 5:
+            search_text = input("Введите текст для поиска по вакансиям:")
+            if search_text:
+                func_DBManager = menu_data[choice]['function']
+                df = func_DBManager(search_text)
+                print_console(df, menu_data[choice]['title'])
+        else:
+            func_DBManager = menu_data[choice]['function']
+            df = func_DBManager()
+            print_console(df, menu_data[choice]['title'])
+
+        while True:
+            repeat = input("Вывести меню повторно? (Да/Нет): ").lower()
+            if repeat in ["да", "нет"]:
+                break
+            else:
+                print("Пожалуйста, ответьте 'Да' или 'Нет'.")
+
+        if repeat == "нет":
+            print("До свидания!")
+            break
+
+
 def main(DBManager):
 
     database_is_exists = database_exists(database_name, params)
     if database_is_exists:
-        answer = input("Обновить данные в БД? Ответ (y/n):")
-        if answer.lower() == 'y':
+        answer = input("Обновить данные в БД? Ответ (Да/Нет):")
+        if answer.lower() == 'да':
             print('Идет обновление данных с hh.ru....')
             database_update(database_is_exists)
     else:
         print('Идет обновление данных с hh.ru....')
         database_update()
 
-    df_employers = DBManager.get_companies_and_vacancies_count()
-    title = "Список всех компаний и количество вакансий у каждой компании"
-    print_console(df_employers, title)
-
-    df_all_vacancies = DBManager.get_all_vacancies()
-    title = "Список всех вакансий"
-    print_console(df_all_vacancies, title)
-
-    df_vacancies_avg_salary = DBManager.get_avg_salary()
-    title = "Средняя зарплата по вакансиям"
-    print_console(df_vacancies_avg_salary, title)
-
-    df_vacancies_higher_salary = DBManager.get_vacancies_with_higher_salary()
-    title = "Список всех вакансий, у которых зарплата выше средней по всем вакансиям"
-    print_console(df_vacancies_higher_salary, title)
-
-    search_text = input("Введите текст для поиска по вакансиям:")
-    if search_text:
-        df_vacancies_list = DBManager.get_vacancies_with_keyword(search_text)
-        title = f'Список всех вакансий, в названии которых содержится текст: {search_text}'
-        print_console(df_vacancies_list, title)
-    else:
-        print("Не был введен текст для поиска")
+    display_interactive_menu(DBManager)
 
 
 if __name__ == '__main__':
