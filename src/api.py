@@ -76,21 +76,3 @@ def get_vacancies(list_emp):
         result.append(vacancy_data)
 
     return result
-
-
-# search_text = 'Python developer'
-# exclude_text = 'Junior Middle Senior'
-# vacancies = get_vacancies(search_text, exclude_text)
-#
-# for vacancy in vacancies:
-#     print(vacancy)
-
-
-# search_text_list = ['Kaspi.kz', 'Freedom Holding', 'BI Group']
-# employers = []
-# for search_text in search_text_list:
-#     employers += get_employers(search_text)
-#     # employers_list.append(employers)
-#
-# for employer in employers:
-#   print(employer)

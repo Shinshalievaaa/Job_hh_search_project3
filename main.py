@@ -1,7 +1,6 @@
 import os
 
-from src.utils import create_database, save_employers_to_database, save_employers_to_database, \
-    save_vacancies_to_database, database_exists
+from src.utils import create_database, save_employers_to_database, save_vacancies_to_database, database_exists
 from src.api import get_vacancies, get_employers
 from src.db_manager import DBManager
 from dotenv import load_dotenv
@@ -19,7 +18,9 @@ params['password'] = os.getenv('password')
 params['port'] = os.getenv('port')
 database_name = os.getenv('dbname')
 
-search_text_list = ['Kaspi.kz', 'Freedom Holding', 'BI Group']
+search_text_list = ['Kaspi.kz', 'Freedom Holding', 'BI Group','Henkel central',
+                    'Magnum', 'RG Brands Kazakhstan','Bereke Bank',
+                    'Sulpak','Алиди Казахстан','ALATRADE']
 
 def database_update(database_is_exists = False):
     """Создание БД, получение данных по API и сохранение их в БД"""

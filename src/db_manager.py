@@ -38,7 +38,7 @@ class DBManager:
         """получает среднюю зарплату по вакансиям."""
         with self.conn.cursor() as cur:
             cur.execute("""SELECT vacancy_name, AVG(COALESCE(salary,0)) AS salary
-                            FROM vacancies GROUP BY vacancy_name 
+                            FROM vacancies WHERE salary > 0 GROUP BY vacancy_name 
                                """)
             df = pd.DataFrame(cur.fetchall(), columns=[description[0] for description in cur.description])
             df = df.rename(columns={'vacancy_name': 'Вакансия', 'salary': 'Зарплата'})
@@ -53,7 +53,8 @@ class DBManager:
             cur.execute("""SELECT vacancy_name, AVG(COALESCE(salary,0)) AS salary
                             FROM vacancies 
                             GROUP BY vacancy_name
-                            HAVING AVG(COALESCE(salary,0)) > (SELECT AVG(COALESCE(salary,0)) FROM vacancies);
+                            HAVING AVG(COALESCE(salary,0)) > (SELECT AVG(COALESCE(salary,0)) FROM vacancies)
+                            ORDER BY salary DESC
                         """)
             df = pd.DataFrame(cur.fetchall(), columns=[description[0] for description in cur.description])
             df = df.rename(columns={'vacancy_name': 'Вакансия', 'salary': 'Зарплата'})
