@@ -1,10 +1,11 @@
 from typing import Any
+
 import psycopg2
 
 
 def database_exists(database_name: str, params: dict) -> bool:
     """Проверка существует ли база данных и есть ли в ней данные, если да, возвращаем TRUE"""
-    conn = psycopg2.connect(dbname='postgres', **params)
+    conn = psycopg2.connect(dbname="postgres", **params)
     cur = conn.cursor()
 
     cur.execute("""SELECT 1 FROM pg_database WHERE datname = %s""", (database_name,))
@@ -16,11 +17,11 @@ def database_exists(database_name: str, params: dict) -> bool:
     return result
 
 
-def create_database(database_name: str, params: dict, database_is_exists = False):
+def create_database(database_name: str, params: dict, database_is_exists=False):
     """Создание базы данных и таблиц для сохранения данных о работодателях и вакансиях."""
 
     if not database_is_exists:
-        conn = psycopg2.connect(dbname='postgres', **params)
+        conn = psycopg2.connect(dbname="postgres", **params)
 
         conn.autocommit = True
 
@@ -65,7 +66,9 @@ def create_database(database_name: str, params: dict, database_is_exists = False
     conn.close()
 
 
-def save_employers_to_database(data: list[dict[str, Any]], database_name: str, params: dict):
+def save_employers_to_database(
+    data: list[dict[str, Any]], database_name: str, params: dict
+):
     """Сохранение данных о работодателях в БД."""
 
     conn = psycopg2.connect(dbname=database_name, **params)
@@ -77,14 +80,21 @@ def save_employers_to_database(data: list[dict[str, Any]], database_name: str, p
                 INSERT INTO employers (id_emp, company_name, open_vacancies, employer_url)
                 VALUES (%s, %s, %s, %s)
                 """,
-                (employer['id'], employer['name'], employer['open_vacancies'], employer['url'])
+                (
+                    employer["id"],
+                    employer["name"],
+                    employer["open_vacancies"],
+                    employer["url"],
+                ),
             )
 
     conn.commit()
     conn.close()
 
 
-def save_vacancies_to_database(data: list[dict[str, Any]], database_name: str, params: dict):
+def save_vacancies_to_database(
+    data: list[dict[str, Any]], database_name: str, params: dict
+):
     """Сохранение данных о вакансиях в БД."""
 
     conn = psycopg2.connect(dbname=database_name, **params)
@@ -96,7 +106,7 @@ def save_vacancies_to_database(data: list[dict[str, Any]], database_name: str, p
                 INSERT INTO vacancies (id_emp, vacancy_name, salary, vacancy_url)
                 VALUES (%s, %s, %s, %s)
                 """,
-                (vacancy['id_emp'], vacancy['name'], vacancy['salary'], vacancy['url'])
+                (vacancy["id_emp"], vacancy["name"], vacancy["salary"], vacancy["url"]),
             )
 
     conn.commit()
